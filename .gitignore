@@ -1,0 +1,12 @@
+# 真实配置（含密钥），只提交 example 模板
+/config.yaml
+
+# 运行时数据
+/data/
+/dist/
+
+# 本机构建产物
+*.exe
+
+# ZCode 工作区配置
+/.zcode/

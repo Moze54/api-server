@@ -1,0 +1,30 @@
+# api-server 配置模板
+# 实际部署时复制为 config.yaml 并修改密钥（config.yaml 已被 .gitignore 排除）。
+
+server:
+  # 只监听本机回环，由 apiHub / 反向代理经内网转发，不暴露公网
+  addr: "127.0.0.1:8300"
+  # 单个抓取/上游任务的硬超时（秒）
+  timeout_seconds: 20
+
+auth:
+  keys:
+    - name: apihub
+      key: "change-me-apihub-key"   # 部署时改成随机长字符串
+      admin: false
+    - name: admin
+      key: "change-me-admin-key"
+      admin: true
+
+ratelimit:
+  per_key_rps: 5    # 每个密钥平均每秒允许的请求数
+  burst: 10         # 令牌桶容量（允许的瞬时突发）
+
+scraper:
+  max_concurrency: 4          # 同时运行的抓取/上游任务上限（资源闸门，保护小服务器）
+  queue_timeout_seconds: 10   # 等待空闲槽位的最长时间，超时返回 42902 busy
+  default_cache_ttl_seconds: 300
+  user_agent: "api-server/0.1"
+
+store:
+  path: "./data/api-server.db"

@@ -1,0 +1,31 @@
+# api-server systemd 单元
+# 部署步骤（服务器上执行）：
+#   sudo useradd -r -s /usr/sbin/nologin apiserver
+#   sudo mkdir -p /opt/api-server && sudo chown apiserver:apiserver /opt/api-server
+#   # 上传 api-server-linux-amd64 重命名为 /opt/api-server/api-server，并放好 config.yaml
+#   sudo cp deploy/api-server.service /etc/systemd/system/
+#   sudo systemctl daemon-reload && sudo systemctl enable --now api-server
+#   journalctl -u api-server -f   # 看日志
+
+[Unit]
+Description=api-server upstream API service
+After=network.target
+
+[Service]
+Type=simple
+User=apiserver
+WorkingDirectory=/opt/api-server
+ExecStart=/opt/api-server/api-server -config /opt/api-server/config.yaml
+Restart=always
+RestartSec=3
+
+# 小服务器资源兜底：防止异常时拖垮同机的 apiHub 等其他项目
+MemoryMax=300M
+
+# 基础加固
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+
+[Install]
+WantedBy=multi-user.target
